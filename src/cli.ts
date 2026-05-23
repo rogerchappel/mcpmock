@@ -121,7 +121,6 @@ program
     });
     const path = writeCatalog(catalog, outputPath ?? "catalog.json");
     console.log(`✅ Generated ${catalog.tools.length} tools → ${path}`);
-    // eslint-disable-next-line no-console
     console.log(`Available tools: ${availableTools().join(", ")}`);
   });
 
