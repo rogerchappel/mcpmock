@@ -1,0 +1,107 @@
+{
+  "name": "sample-catalog",
+  "description": "A sample MCP tool catalog for testing",
+  "$schema": "v1",
+  "tools": [
+    {
+      "name": "search",
+      "description": "Search the knowledge base",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The search query"
+          },
+          "limit": {
+            "type": "number",
+            "description": "Max results to return",
+            "default": 10
+          }
+        },
+        "required": ["query"]
+      },
+      "responses": {
+        "default": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Found 3 results for {query}"
+            }
+          ]
+        },
+        "variants": {
+          "empty": {
+            "content": [
+              {
+                "type": "text",
+                "text": "No results found for \"{query}\""
+              }
+            ]
+          },
+          "error": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Search service unavailable"
+              }
+            ],
+            "isError": true
+          }
+        }
+      }
+    },
+    {
+      "name": "read_file",
+      "description": "Read the contents of a file",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File path to read"
+          }
+        },
+        "required": ["path"]
+      },
+      "responses": {
+        "default": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Contents of {path}:\nLine 1: Hello world\nLine 2: Example content"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "create_file",
+      "description": "Create or overwrite a file",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File path to create"
+          },
+          "content": {
+            "type": "string",
+            "description": "File contents"
+          }
+        },
+        "required": ["path", "content"]
+      },
+      "responses": {
+        "default": {
+          "content": [
+            {
+              "type": "text",
+              "text": "File created at {path} ({content} bytes)"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
