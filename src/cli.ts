@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { loadCatalog, validateCatalog, validateCatalogStrict } from "./catalog.js";
 import { runCall, listTools, formatToolList } from "./runner.js";
 import { newTranscript, recordEntry, replayTranscript } from "./transcript.js";
+import { generateCatalog, writeCatalog, listGeneratedTools as availableTools } from "./generator.js";
 import type { CliOptions } from "./types.js";
 
 const program = new Command();
@@ -106,6 +107,22 @@ program
     }
 
     console.error(`▶️ Replay complete: ${entries.length} entries`);
+  });
+
+program
+  .command("generate [output]")
+  .description("Generate a mock catalog with sample tools")
+  .option("-c, --count <number>", "Number of tools to generate", "5")
+  .action((outputPath: string | undefined, opts: { count?: string }) => {
+    const catalog = generateCatalog({
+      toolCount: parseInt(opts.count ?? "5", 10),
+      format: "json",
+      output: outputPath ?? "catalog.json",
+    });
+    const path = writeCatalog(catalog, outputPath ?? "catalog.json");
+    console.log(`✅ Generated ${catalog.tools.length} tools → ${path}`);
+    // eslint-disable-next-line no-console
+    console.log(`Available tools: ${availableTools().join(", ")}`);
   });
 
 program.parse();
