@@ -1,0 +1,7 @@
+{
+  "name": "orchestration-state-machine",
+  "description": "State machine flow for deterministic tool call sequences",
+  "version": "1.0.0",
+  "vars": {},
+  "steps": []
+}
