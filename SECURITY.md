@@ -56,3 +56,9 @@ Out of scope:
 ## Disclosure
 
 Coordinate disclosure with maintainers before publishing vulnerability details.
+
+## mcpmock-specific notes
+
+- MCPMock is designed for local testing — no network calls are made
+- Fixture files contain mock data only — no real credentials
+- Generated catalogs produce deterministic responses — safe for CI
