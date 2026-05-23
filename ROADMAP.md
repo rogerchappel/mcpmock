@@ -1,38 +1,20 @@
-# Roadmap
+# MCPMock Roadmap
 
-This roadmap describes intended direction, not a binding delivery promise.
-Review it regularly and update it as the project learns from users,
-contributors, and implementation constraints.
+## Completed (v0.1.0)
+- ✅ Core CLI (validate, tools, call, replay)
+- ✅ Catalog generator
+- ✅ Orchestration engine
+- ✅ Transcript recording
+- ✅ Test suite & CI
 
-## Now
+## Planned (v0.2.0)
+- YAML catalog support
+- Schema generation from tool definitions
+- MCP JSON-RPC wire format compatibility
+- HTTP mock endpoint for browser testing
 
-- Define the smallest useful project scope.
-- Keep repository setup, documentation, and verification easy for contributors
-  to follow.
-- Ship small, reviewable improvements.
-
-## Next
-
-- Add the next capabilities that directly support the project's primary users.
-- Improve tests, docs, and examples around the most used workflows.
-- Reduce setup friction discovered during early use.
-
-## Later
-
-- Consider larger features after the core workflow is stable.
-- Add automation only where it removes repeated maintainer work.
-- Revisit packaging, deployment, or integration options based on real demand.
-
-## Not Planned
-
-- Unrelated platform rewrites without a clear migration path.
-- Mandatory dependencies on a single ecosystem unless the project requires it.
-- Public release dates before maintainers are ready to commit to them.
-
-## Roadmap Review
-
-Before each major or meaningful minor release:
-
-- Move completed user-visible work into `CHANGELOG.md`.
-- Remove stale commitments.
-- Promote only the next reviewable set of work into `Now`.
+## Backlog
+- MCP stdio transport compatibility
+- Smart response generation from input patterns
+- Visual transcript viewer
+- Agent framework integrations (LangChain, Claude)
