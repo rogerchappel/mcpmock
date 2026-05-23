@@ -1,21 +1,22 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-This project follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
-format and uses semantic versioning when versioned releases are published.
-
-## [Unreleased]
+## [0.1.0] - 2026-05-23
 
 ### Added
+- CLI with `validate`, `tools`, `call`, `replay`, `generate` commands
+- Catalog loading from JSON files
+- Catalog validation with error paths
+- Template substitution in responses (`{propertyName}` syntax)
+- Tool call runner with variant support
+- Transcript recording and replay (JSONL format)
+- Orchestration engine for multi-step agent flows
+- Catalog generator with 8 sample tool templates
+- Fixture catalogs (sample, minimal, invalid, empty)
+- Test suite (57 tests across 7 test files)
+- Smoke test and validation scripts
+- GitHub Actions CI workflow
+- Branch protection and release workflows
 
-- Initial project setup.
-
-## Release Links
-
-- Unreleased:
-  `https://github.com/rogerchappel/mcpmock/compare/...HEAD`
-- Latest release:
-  `https://github.com/rogerchappel/mcpmock/releases/latest`
-
-Replace placeholder links once the first release tag exists.
+### Fixed
+- TypeScript `exactOptionalPropertyTypes` compatibility
+- Lint configuration for flat config ESLint
