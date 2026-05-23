@@ -185,3 +185,31 @@ npm run smoke
 ## License
 
 MIT
+
+### Generated Catalog Example
+
+```json
+{
+  "name": "generated-catalog",
+  "description": "Generated mock catalog with 3 tools",
+  "tools": [
+    {
+      "name": "weather",
+      "description": "Get current weather conditions for a location",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "location": { "type": "string" },
+          "units": { "type": "string", "enum": ["metric", "imperial"] }
+        },
+        "required": ["location"]
+      },
+      "responses": {
+        "default": {
+          "content": [{"type": "text", "text": "Mock response from weather"}]
+        }
+      }
+    }
+  ]
+}
+```
