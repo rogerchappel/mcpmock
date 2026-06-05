@@ -213,3 +213,13 @@ MIT
   ]
 }
 ```
+
+## Verification
+
+Run these checks before opening a PR or publishing a release:
+
+```bash
+pnpm test
+pnpm run smoke
+pnpm run release:check
+```
