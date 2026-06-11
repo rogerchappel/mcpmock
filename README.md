@@ -230,3 +230,9 @@ pnpm test
 pnpm run smoke
 pnpm run release:check
 ```
+
+## Verification
+
+Run the release-readiness checks that match this package before publishing or opening a release PR.
+
+- `npm run lint` - run lint rules
