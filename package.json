@@ -16,7 +16,8 @@
     "lint": "eslint src --ext .ts",
     "smoke": "bash scripts/smoke.sh",
     "validate": "bash scripts/validate.sh",
-    "release:check": "pnpm run check && pnpm test && bash scripts/smoke.sh"
+    "release:check": "pnpm run check && pnpm test && pnpm run smoke && pnpm run package:smoke",
+    "package:smoke": "npm pack --dry-run"
   },
   "keywords": [
     "mcp",
@@ -52,5 +53,17 @@
     "typescript-eslint": "^8.59.4",
     "vite": "^6.4.2",
     "vitest": "^4.1.7"
-  }
+  },
+  "files": [
+    "src",
+    "fixtures",
+    "docs",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "RELEASE_NOTES.md"
+  ]
 }
