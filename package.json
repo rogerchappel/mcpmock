@@ -17,7 +17,7 @@
     "smoke": "bash scripts/smoke.sh",
     "validate": "bash scripts/validate.sh",
     "release:check": "pnpm run check && pnpm test && pnpm run smoke && pnpm run package:smoke",
-    "package:smoke": "pnpm pack --dry-run"
+    "package:smoke": "npm pack --dry-run"
   },
   "keywords": [
     "mcp",

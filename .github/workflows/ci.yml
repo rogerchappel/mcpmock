@@ -52,6 +52,6 @@ jobs:
         run: |
           set -euo pipefail
 
-          corepack enable
+          npm install -g pnpm@9.15.0
           pnpm install --frozen-lockfile
           pnpm run release:check
