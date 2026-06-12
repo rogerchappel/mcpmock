@@ -236,3 +236,32 @@ pnpm run release:check
 Run the release-readiness checks that match this package before publishing or opening a release PR.
 
 - `npm run lint` - run lint rules
+
+## Verification
+
+Run the package checks before opening a release PR:
+
+```bash
+npm run check
+```
+
+```bash
+npm test
+```
+
+```bash
+npm run build
+```
+
+```bash
+npm run smoke
+```
+
+```bash
+npm run package:smoke
+```
+
+```bash
+npm run release:check
+```
+
