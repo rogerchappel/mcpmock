@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "description": "Fixture-backed mock MCP tool catalogs for deterministic agent testing",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "bin": {
     "mcpmock": "dist/cli.js"
   },
@@ -17,7 +24,8 @@
     "smoke": "bash scripts/smoke.sh",
     "validate": "bash scripts/validate.sh",
     "release:check": "npm run check && npm test && npm run smoke && npm run package:smoke",
-    "package:smoke": "npm run build && npm pack --dry-run"
+    "package:smoke": "npm run build && npm pack --dry-run",
+    "prepack": "npm run build"
   },
   "keywords": [
     "mcp",
@@ -55,7 +63,7 @@
     "vitest": "^4.1.7"
   },
   "files": [
-    "src",
+    "dist",
     "fixtures",
     "docs",
     "README.md",
