@@ -184,7 +184,7 @@ npm run smoke
 
 ## Package contents
 
-The npm package allowlist includes the runtime files plus the public support
+The npm package allowlist includes the built runtime files plus the public support
 documents needed for release review: `README.md`, `LICENSE`, `SECURITY.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `RELEASE_NOTES.md`.
 Run `npm run package:smoke` or `npm pack --dry-run` before publishing to
 confirm those files are still present in the tarball.
@@ -221,47 +221,11 @@ MIT
 }
 ```
 
-## Verification
-
-Run these checks before opening a PR or publishing a release:
-
-```bash
-pnpm test
-pnpm run smoke
-pnpm run release:check
-```
-
-## Verification
-
 Run the release-readiness checks that match this package before publishing or opening a release PR.
 
 - `npm run lint` - run lint rules
-
-## Verification
-
-Run the package checks before opening a release PR:
-
-```bash
-npm run check
-```
-
-```bash
-npm test
-```
-
-```bash
-npm run build
-```
-
-```bash
-npm run smoke
-```
-
-```bash
-npm run package:smoke
-```
-
-```bash
-npm run release:check
-```
-
+- `npm run check` - type-check the TypeScript sources
+- `npm test` - run the Vitest suite
+- `npm run smoke` - exercise the built CLI against fixtures
+- `npm run package:smoke` - build and dry-run the npm tarball
+- `npm run release:check` - run the full local release gate
