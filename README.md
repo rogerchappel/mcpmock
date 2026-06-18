@@ -229,3 +229,14 @@ Run the release-readiness checks that match this package before publishing or op
 - `npm run smoke` - exercise the built CLI against fixtures
 - `npm run package:smoke` - build and dry-run the npm tarball
 - `npm run release:check` - run the full local release gate
+
+## Release readiness
+
+Run the release gate before tagging or publishing:
+
+```sh
+npm run release:check
+npm pack --dry-run
+```
+
+The package smoke check prints the tarball contents so missing runtime files are caught before release.
