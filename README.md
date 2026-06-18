@@ -235,8 +235,8 @@ Run the release-readiness checks that match this package before publishing or op
 Run the release gate before tagging or publishing:
 
 ```sh
-pnpm run release:check
-pnpm pack --dry-run
+npm run release:check
+npm pack --dry-run
 ```
 
 The package smoke check prints the tarball contents so missing runtime files are caught before release.
