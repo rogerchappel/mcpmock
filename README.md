@@ -189,6 +189,12 @@ documents needed for release review: `README.md`, `LICENSE`, `SECURITY.md`, `CHA
 Run `npm run package:smoke` or `npm pack --dry-run` before publishing to
 confirm those files are still present in the tarball.
 
+## Limitations
+
+- MCPMock validates and replays local mock catalogs; it is not a compliance verifier for real MCP servers.
+- Recorded transcripts may contain sensitive fixture data, so review them before committing or sharing.
+- Timing simulation is deterministic test scaffolding and should not be treated as a production latency model.
+
 ## License
 
 MIT
