@@ -24,7 +24,7 @@
     "smoke": "bash scripts/smoke.sh",
     "validate": "bash scripts/validate.sh",
     "release:check": "npm run check && npm test && npm run smoke && npm run package:smoke",
-    "package:smoke": "npm run build && npm pack --dry-run",
+    "package:smoke": "npm run build && node scripts/package-smoke.mjs",
     "prepack": "npm run build"
   },
   "keywords": [
