@@ -2,6 +2,7 @@
 
 ### Highlights
 
+- Docs: Add reusable MCPMock agent skill packaging and package smoke coverage.
 - Maintenance: Add release notes for v0.1.0 release candidate.
 - Fixes: Resolve lint errors (unused imports, redundant eslint-disable)
 - Docs: Release changelog for v0.1.0 with complete feature list.
@@ -10,6 +11,7 @@
 
 ### Changes
 
+- Docs: Add reusable MCPMock agent skill packaging and package smoke coverage. (pending)
 - Features: Add 'generate' CLI command for mock catalog generation. (9d2c2ab)
 - Features: Add catalog generator with 8 sample tool templates. (0da8c8c)
 - Fixes: Resolve lint errors (unused imports, redundant eslint-disable) (8df46a1)
@@ -33,4 +35,3 @@
 ### Contributors
 
 - Roger Chappel
-
