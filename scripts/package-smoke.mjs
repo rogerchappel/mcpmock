@@ -14,6 +14,7 @@ const required = [
   'fixtures/invalid.json',
   'docs/README.md',
   'README.md',
+  'SKILL.md',
   'LICENSE',
   'SECURITY.md',
   'CHANGELOG.md',
