@@ -173,6 +173,10 @@ Transcripts are newline-delimited JSON records:
 
 MCPMock supports full conversation orchestration. See [docs/ORCHESTRATION.md](./docs/ORCHESTRATION.md) for multi-tool workflows and state machine patterns.
 
+## Agent Skill
+
+This repository includes [SKILL.md](./SKILL.md) for agents that need a repeatable local workflow for MCP-style fixture catalogs, deterministic tool calls, and transcript replay. The skill keeps external action boundaries explicit: MCPMock reads local fixtures by default and only writes transcripts when `--record --output <file>` is provided.
+
 ## Development
 
 ```bash
