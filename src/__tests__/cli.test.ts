@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { describe, it, expect } from "vitest";
 
 describe("CLI smoke", () => {
@@ -21,6 +22,16 @@ describe("CLI smoke", () => {
     );
 
     expect(output).toContain("Catalog is valid");
+  });
+
+  it("prints the package version from the CLI metadata", () => {
+    const pkg = JSON.parse(readFileSync("package.json", "utf8")) as { version: string };
+    const output = execFileSync("npx", ["tsx", "src/cli.ts", "--version"], {
+      cwd: process.cwd(),
+      encoding: "utf8",
+    });
+
+    expect(output.trim()).toBe(pkg.version);
   });
 });
 
