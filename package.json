@@ -15,7 +15,7 @@
   },
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod +x dist/cli.js",
     "check": "tsc --noEmit",
     "dev": "tsx src/cli.ts",
     "test": "vitest run",
