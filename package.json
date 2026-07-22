@@ -1,5 +1,5 @@
 {
-  "name": "mcpmock",
+  "name": "@rogerchappel/mcpmock",
   "version": "0.1.0",
   "description": "Fixture-backed mock MCP tool catalogs for deterministic agent testing",
   "main": "dist/index.js",
@@ -45,6 +45,9 @@
   "homepage": "https://github.com/rogerchappel/mcpmock#readme",
   "bugs": {
     "url": "https://github.com/rogerchappel/mcpmock/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "engines": {
     "node": ">=18"

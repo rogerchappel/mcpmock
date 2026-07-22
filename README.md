@@ -18,9 +18,9 @@ MCPMock gives you a local fixture-backed mock server where **the same inputs alw
 ## Installation
 
 ```bash
-npm install -g mcpmock
+npm install -g @rogerchappel/mcpmock
 # or
-npx mcpmock --help
+npx --package @rogerchappel/mcpmock mcpmock --help
 ```
 
 ## Quick Start
