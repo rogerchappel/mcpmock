@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-import { Command } from "commander";
+import { Command, InvalidArgumentError } from "commander";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { loadCatalog, validateCatalog, validateCatalogStrict } from "./catalog.js";
 import { runCall, listTools, formatToolList } from "./runner.js";
 import { newTranscript, recordEntry, replayTranscript } from "./transcript.js";
+import { parseReplaySpeed, replayEntries } from "./replay.js";
 import { generateCatalog, writeCatalog, listGeneratedTools as availableTools } from "./generator.js";
 import type { CliOptions } from "./types.js";
 
@@ -83,29 +84,35 @@ program
   .command("replay <transcript>")
   .description("Replay a transcript file")
   .option("--fast", "Skip timing delays")
-  .option("--speed <factor>", "Playback speed multiplier", "1")
-  .action((filePath: string, opts: { fast?: boolean; speed?: string }) => {
-    const entries = replayTranscript(filePath);
-    const speed = parseFloat(opts.speed ?? "1");
-
-    for (const entry of entries) {
-      console.log(
-        JSON.stringify({
-          tool: entry.tool,
-          args: entry.args,
-          result: entry.result,
-          variant: entry.variant,
-        })
-      );
-
-      if (!opts.fast && entry.latencyMs > 0) {
-        const delayMs = entry.latencyMs / speed;
-        // For non-blocking replay, just note the delay
-        if (delayMs > 0 && delayMs <= 2000) {
-          // Only delay if under 2s to avoid hanging
-        }
+  .option(
+    "--speed <factor>",
+    "Playback speed multiplier (must be positive)",
+    (value: string) => {
+      try {
+        return parseReplaySpeed(value);
+      } catch (error) {
+        throw new InvalidArgumentError((error as Error).message);
       }
-    }
+    },
+    1
+  )
+  .action(async (filePath: string, opts: { fast?: boolean; speed?: number }) => {
+    const entries = replayTranscript(filePath);
+
+    await replayEntries(entries, {
+      fast: opts.fast ?? false,
+      speed: opts.speed ?? 1,
+      onEntry: (entry) => {
+        console.log(
+          JSON.stringify({
+            tool: entry.tool,
+            args: entry.args,
+            result: entry.result,
+            variant: entry.variant,
+          })
+        );
+      },
+    });
 
     console.error(`▶️ Replay complete: ${entries.length} entries`);
   });
@@ -125,4 +132,4 @@ program
     console.log(`Available tools: ${availableTools().join(", ")}`);
   });
 
-program.parse();
+await program.parseAsync();

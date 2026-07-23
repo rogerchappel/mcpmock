@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { describe, it, expect } from "vitest";
 
@@ -33,6 +33,20 @@ describe("CLI smoke", () => {
 
     expect(output.trim()).toBe(pkg.version);
   });
+
+  it.each(["0", "-1", "NaN", "Infinity"])(
+    "rejects invalid replay speed %s with a CLI error",
+    (speed) => {
+      const result = spawnSync(
+        "npx",
+        ["tsx", "src/cli.ts", "replay", "unused.jsonl", "--speed", speed],
+        { cwd: process.cwd(), encoding: "utf8" }
+      );
+
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain("Playback speed must be a positive finite number");
+    }
+  );
 });
 
 // Integration tests for the CLI are handled in runner.test.ts via direct module calls.
