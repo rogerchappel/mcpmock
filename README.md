@@ -138,6 +138,10 @@ mcpmock replay transcript.jsonl --fast   # skip delays
 mcpmock replay transcript.jsonl --speed 2  # 2x faster
 ```
 
+Each entry is printed, then replay waits for that entry's recorded `latencyMs`
+before printing the next entry. `--speed` divides those delays by a positive
+finite multiplier; `--fast` skips them entirely.
+
 ## Catalog Format
 
 A catalog is a JSON file with a `tools` array. Each tool has:
