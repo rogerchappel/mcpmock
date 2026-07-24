@@ -22,8 +22,9 @@
     "test:watch": "vitest",
     "lint": "eslint src --ext .ts",
     "smoke": "bash scripts/smoke.sh",
+    "docs:smoke": "npm run build && node scripts/docs-smoke.mjs",
     "validate": "bash scripts/validate.sh",
-    "release:check": "npm run check && npm test && npm run smoke && npm run package:smoke",
+    "release:check": "npm run check && npm test && npm run smoke && npm run docs:smoke && npm run package:smoke",
     "package:smoke": "npm run build && node scripts/package-smoke.mjs",
     "prepack": "npm run build"
   },

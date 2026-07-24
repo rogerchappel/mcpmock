@@ -19,7 +19,7 @@ MCP servers expose powerful tools, but tests for agent integrations often drift 
 
 ## V1 Scope
 
-- Read a simple YAML or JSON mock catalog describing tools, schemas, and responses.
+- Read a JSON mock catalog describing tools, schemas, and responses.
 - Validate catalog shape.
 - Print MCP-style tool listings and deterministic call responses.
 - Record a transcript from scripted calls.
@@ -33,10 +33,11 @@ MCP servers expose powerful tools, but tests for agent integrations often drift 
 
 ## CLI Sketch
 
-    mcpmock validate fixtures/catalog.yml
-    mcpmock tools fixtures/catalog.yml --format json
-    mcpmock call fixtures/catalog.yml search '{"query":"demo"}'
-    mcpmock replay fixtures/transcript.json
+    mcpmock validate fixtures/catalog.json --strict
+    mcpmock tools fixtures/catalog.json --format json
+    mcpmock call fixtures/catalog.json search '{"query":"demo"}'
+    mcpmock call fixtures/catalog.json search '{"query":"demo"}' --record --output transcript.jsonl
+    mcpmock replay fixtures/transcript.jsonl --fast
 
 ## Differentiation
 
@@ -46,4 +47,3 @@ MCPMock is deliberately boring: plain files in, deterministic tool behavior out.
 
 Inspired by the Model Context Protocol tool concept documentation:
 https://modelcontextprotocol.io/docs/concepts/tools
-

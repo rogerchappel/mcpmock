@@ -25,6 +25,7 @@ check node -e "require('./fixtures/catalog.json')"
 check bash -c 'test -d src'
 check bash -c 'test -d fixtures'
 check bash -c 'test -f fixtures/catalog.json'
+check bash -c 'test -f fixtures/transcript.jsonl'
 check bash -c 'test -f src/cli.ts'
 check bash -c 'test -f src/catalog.ts'
 check bash -c 'test -f src/runner.ts'
@@ -41,6 +42,7 @@ check bash -c 'test -f docs/PRD.md'
 check bash -c 'test -f docs/TASKS.md'
 check bash -c 'test -f docs/ORCHESTRATION.md'
 check bash -c 'test -f docs/orchestration.json'
+check bash -c 'test -f scripts/docs-smoke.mjs'
 
 echo ""
 

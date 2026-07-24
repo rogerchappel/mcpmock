@@ -104,8 +104,8 @@ mcpmock replay transcript.jsonl
 Validate a mock catalog against the schema.
 
 ```bash
-mcpmock validate catalog.json       # text output
-mcpmock validate catalog.json -o    # output validated schema
+mcpmock validate fixtures/catalog.json          # basic catalog validation
+mcpmock validate fixtures/catalog.json --strict # strict input-schema validation
 ```
 
 ### `mcpmock tools <catalog>`
@@ -113,8 +113,8 @@ mcpmock validate catalog.json -o    # output validated schema
 List all tools defined in a catalog.
 
 ```bash
-mcpmock tools catalog.json              # text output (default)
-mcpmock tools catalog.json --format json  # JSON output
+mcpmock tools fixtures/catalog.json               # text output (default)
+mcpmock tools fixtures/catalog.json --format json # JSON output
 ```
 
 ### `mcpmock call <catalog> <tool-name> <args-json>`
@@ -122,10 +122,10 @@ mcpmock tools catalog.json --format json  # JSON output
 Call a mock tool and get a deterministic response.
 
 ```bash
-mcpmock call catalog.json search '{"query": "test"}'
-mcpmock call catalog.json search '{"query": "test"}' --variant empty
-mcpmock call catalog.json search '{"query": "test"}' --record
-mcpmock call catalog.json search '{"query": "test"}' --record --output transcript.jsonl
+mcpmock call fixtures/catalog.json search '{"query": "test"}'
+mcpmock call fixtures/catalog.json search '{"query": "test"}' --variant empty
+mcpmock call fixtures/catalog.json search '{"query": "test"}' --record
+mcpmock call fixtures/catalog.json search '{"query": "test"}' --record --output transcript.jsonl
 ```
 
 ### `mcpmock replay <transcript>`
@@ -133,9 +133,9 @@ mcpmock call catalog.json search '{"query": "test"}' --record --output transcrip
 Replay a recorded transcript with timing simulation.
 
 ```bash
-mcpmock replay transcript.jsonl          # with default timing
-mcpmock replay transcript.jsonl --fast   # skip delays
-mcpmock replay transcript.jsonl --speed 2  # 2x faster
+mcpmock replay fixtures/transcript.jsonl           # with recorded timing
+mcpmock replay fixtures/transcript.jsonl --fast    # skip delays
+mcpmock replay fixtures/transcript.jsonl --speed 2 # 2x faster
 ```
 
 Each entry is printed, then replay waits for that entry's recorded `latencyMs`

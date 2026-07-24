@@ -21,6 +21,7 @@ try {
     'fixtures/catalog.json',
     'fixtures/minimal.json',
     'fixtures/invalid.json',
+    'fixtures/transcript.jsonl',
     'docs/README.md',
     'README.md',
     'SKILL.md',
