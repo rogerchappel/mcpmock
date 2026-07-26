@@ -249,8 +249,12 @@ Run the release-readiness checks that match this package before publishing or op
 Run the release gate before tagging or publishing:
 
 ```sh
+npm ci
 npm run release:check
 npm pack --dry-run
 ```
+
+The repository uses npm and `package-lock.json` for deterministic installs. The
+release gate also checks that CI and release workflows retain that configuration.
 
 The package smoke check prints the tarball contents so missing runtime files are caught before release.
