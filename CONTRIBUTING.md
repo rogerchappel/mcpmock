@@ -64,6 +64,9 @@ Next recommended task:
 
 Every contribution should include verification.
 
+Install dependencies with `npm ci`; npm and the committed `package-lock.json`
+are the repository's canonical package-manager configuration.
+
 Examples:
 
 - Documentation: inspect rendered Markdown or review the diff.

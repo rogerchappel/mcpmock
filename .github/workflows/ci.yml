@@ -19,6 +19,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
       - name: Validate required project files
         run: |
           set -euo pipefail
@@ -52,6 +58,5 @@ jobs:
         run: |
           set -euo pipefail
 
-          npm install -g pnpm@9.15.0
-          pnpm install --frozen-lockfile
-          pnpm run release:check
+          npm ci
+          npm run release:check
