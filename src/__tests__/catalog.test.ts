@@ -36,6 +36,19 @@ describe("validateCatalog", () => {
     expect(result.errors?.some((e) => e.path.includes("name"))).toBe(true);
   });
 
+  it.each([null, "tool", 42, [], true])(
+    "rejects non-object tool entry %j at its array path",
+    (tool) => {
+      const result = validateCatalog({ tools: [tool] });
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual({
+        path: "$.tools[0]",
+        message: "Tool must be an object",
+      });
+    }
+  );
+
   it("rejects a tool without description", () => {
     const catalog = {
       $schema: "v1",
@@ -76,6 +89,41 @@ describe("validateCatalog", () => {
     const result = validateCatalog(catalog);
     expect(result.valid).toBe(false);
     expect(result.errors?.some((e) => e.path.includes("default"))).toBe(true);
+  });
+
+  it.each([null, "response", 42, [], true])(
+    "rejects non-object default response %j at its precise path",
+    (defaultResponse) => {
+      const catalog = {
+        tools: [
+          {
+            name: "x",
+            description: "d",
+            inputSchema: { type: "object" },
+            responses: { default: defaultResponse },
+          },
+        ],
+      };
+      const result = validateCatalog(catalog);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual({
+        path: "$.tools[0].responses.default",
+        message: "Default response must be an object",
+      });
+    }
+  );
+
+  it("rejects an array responses value as a non-object shape", () => {
+    const catalog = {
+      tools: [{ name: "x", description: "d", inputSchema: {}, responses: [] }],
+    };
+    const result = validateCatalog(catalog);
+
+    expect(result.errors).toContainEqual({
+      path: "$.tools[0].responses",
+      message: "Tool must have a responses object",
+    });
   });
 
   it("rejects duplicate tool names", () => {
@@ -134,5 +182,10 @@ describe("validateCatalogStrict", () => {
   it("accepts valid schema type", () => {
     const result = validateCatalogStrict(validCatalog);
     expect(result.valid).toBe(true);
+  });
+
+  it("remains safe when base validation rejects malformed tools", () => {
+    expect(() => validateCatalogStrict({ tools: [null] })).not.toThrow();
+    expect(validateCatalogStrict({ tools: [null] }).valid).toBe(false);
   });
 });

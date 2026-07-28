@@ -142,6 +142,15 @@ Each entry is printed, then replay waits for that entry's recorded `latencyMs`
 before printing the next entry. `--speed` divides those delays by a positive
 finite multiplier; `--fast` skips them entirely.
 
+### `mcpmock generate [output]`
+
+Generate a deterministic catalog containing 1 to 8 sample tools (5 by default).
+The count must be a whole number within that range.
+
+```bash
+mcpmock generate my-tools.json --count 3
+```
+
 ## Catalog Format
 
 A catalog is a JSON file with a `tools` array. Each tool has:
