@@ -8,6 +8,7 @@ const catalog = "fixtures/catalog.json";
 const fixtureTranscript = "fixtures/transcript.jsonl";
 const smokeRoot = mkdtempSync(join(tmpdir(), "mcpmock-docs-smoke-"));
 const recordedTranscript = join(smokeRoot, "transcript.jsonl");
+const generatedCatalog = join(smokeRoot, "generated-catalog.json");
 
 function run(args) {
   return execFileSync(process.execPath, [cli, ...args], {
@@ -24,6 +25,7 @@ try {
     `mcpmock tools ${catalog} --format json`,
     `mcpmock call ${catalog} search`,
     `mcpmock replay ${fixtureTranscript} --fast`,
+    "mcpmock generate my-tools.json --count 3",
   ];
 
   for (const example of requiredExamples) {
@@ -74,7 +76,13 @@ try {
     throw new Error("Replay examples returned unexpected output.");
   }
 
-  console.log("Documentation CLI smoke OK: validate, tools, call/record, and replay examples passed.");
+  run(["generate", generatedCatalog, "--count", "3"]);
+  const generated = JSON.parse(readFileSync(generatedCatalog, "utf8"));
+  if (generated.tools?.length !== 3 || generated.tools[0]?.name !== "weather") {
+    throw new Error("Generate example returned unexpected output.");
+  }
+
+  console.log("Documentation CLI smoke OK: validate, tools, call/record, replay, and generate examples passed.");
 } finally {
   rmSync(smokeRoot, { recursive: true, force: true });
 }
