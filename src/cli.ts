@@ -9,6 +9,15 @@ import { generateCatalog, writeCatalog, listGeneratedTools as availableTools } f
 import type { CliOptions } from "./types.js";
 
 const program = new Command();
+const MAX_GENERATED_TOOLS = availableTools().length;
+
+function parseToolCount(value: string): number {
+  const count = Number(value);
+  if (!Number.isInteger(count) || count < 1 || count > MAX_GENERATED_TOOLS) {
+    throw new InvalidArgumentError(`Tool count must be an integer from 1 to ${MAX_GENERATED_TOOLS}`);
+  }
+  return count;
+}
 
 program
   .name("mcpmock")
@@ -120,10 +129,15 @@ program
 program
   .command("generate [output]")
   .description("Generate a mock catalog with sample tools")
-  .option("-c, --count <number>", "Number of tools to generate", "5")
-  .action((outputPath: string | undefined, opts: { count?: string }) => {
+  .option(
+    "-c, --count <number>",
+    `Number of tools to generate (1-${MAX_GENERATED_TOOLS})`,
+    parseToolCount,
+    5
+  )
+  .action((outputPath: string | undefined, opts: { count?: number }) => {
     const catalog = generateCatalog({
-      toolCount: parseInt(opts.count ?? "5", 10),
+      toolCount: opts.count ?? 5,
       format: "json",
       output: outputPath ?? "catalog.json",
     });
