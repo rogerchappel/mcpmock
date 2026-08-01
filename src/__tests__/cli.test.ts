@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, it, expect } from "vitest";
@@ -77,6 +77,38 @@ describe("CLI smoke", () => {
     expect(result.stdout).toContain("Generated 3 tools");
     expect(JSON.parse(readFileSync(output, "utf8")).tools.map((tool: { name: string }) => tool.name))
       .toEqual(["weather", "date_time", "calculator"]);
+  });
+
+  it("rejects a transcript output that resolves to the catalog without changing it", () => {
+    const directory = mkdtempSync(join(tmpdir(), "mcpmock-record-alias-"));
+    const catalog = join(directory, "catalog.json");
+    const original = readFileSync("fixtures/catalog.json");
+    writeFileSync(catalog, original);
+
+    const result = spawnSync(
+      "npx",
+      ["tsx", "src/cli.ts", "call", catalog, "search", '{"query":"test"}', "--record", "--output", join(directory, ".", "catalog.json")],
+      { cwd: process.cwd(), encoding: "utf8" }
+    );
+
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("Transcript output path must differ from the catalog path");
+    expect(readFileSync(catalog)).toEqual(original);
+  });
+
+  it("appends valid JSONL when recording to a separate output", () => {
+    const output = join(mkdtempSync(join(tmpdir(), "mcpmock-record-")), "transcript.jsonl");
+    const args = [
+      "tsx", "src/cli.ts", "call", "fixtures/catalog.json", "search",
+      '{"query":"test"}', "--record", "--output", output,
+    ];
+
+    expect(spawnSync("npx", args, { cwd: process.cwd(), encoding: "utf8" }).status).toBe(0);
+    expect(spawnSync("npx", args, { cwd: process.cwd(), encoding: "utf8" }).status).toBe(0);
+
+    const entries = readFileSync(output, "utf8").trim().split("\n").map((line) => JSON.parse(line));
+    expect(entries).toHaveLength(2);
+    expect(entries.every((entry: { tool: string }) => entry.tool === "search")).toBe(true);
   });
 });
 
