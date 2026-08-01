@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Command, InvalidArgumentError } from "commander";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { resolve } from "node:path";
 import { loadCatalog, validateCatalog, validateCatalogStrict } from "./catalog.js";
 import { runCall, listTools, formatToolList } from "./runner.js";
 import { newTranscript, recordEntry, replayTranscript } from "./transcript.js";
@@ -68,9 +69,14 @@ program
   .description("Call a mock tool")
   .option("-v, --variant <name>", "Response variant to use")
   .option("-r, --record", "Record this call to transcript")
-  .option("-o, --output <path>", "Transcript output path", "transcript.jsonl")
+  .option("-o, --output <path>", "Transcript output path (must differ from catalog)", "transcript.jsonl")
   .action(
     (catalogPath: string, toolName: string, argsJson: string | undefined, opts: CliOptions) => {
+      const outPath = opts.output ?? "transcript.jsonl";
+      if (opts.record && resolve(outPath) === resolve(catalogPath)) {
+        throw new Error("Transcript output path must differ from the catalog path");
+      }
+
       const catalog = loadCatalog(catalogPath);
       const args: Record<string, unknown> = argsJson ? JSON.parse(argsJson) : {};
 
@@ -80,9 +86,9 @@ program
       if (opts.record) {
         const entry = newTranscript(toolName, args, result, opts.variant);
         const line = recordEntry(entry);
-        const outPath = opts.output ?? "transcript.jsonl";
         const existing = existsSync(outPath) ? readFileSync(outPath, "utf8") : "";
-        writeFileSync(outPath, existing + (existing ? "\n" : "") + line + "\n");
+        const separator = existing && !existing.endsWith("\n") ? "\n" : "";
+        writeFileSync(outPath, existing + separator + line + "\n");
         console.error(`📝 Recorded to ${outPath}`);
       }
     }
