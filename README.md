@@ -128,6 +128,9 @@ mcpmock call fixtures/catalog.json search '{"query": "test"}' --record
 mcpmock call fixtures/catalog.json search '{"query": "test"}' --record --output transcript.jsonl
 ```
 
+The transcript output must be a different file from the input catalog. Equivalent relative and
+absolute paths are rejected before recording so the catalog cannot be overwritten or appended to.
+
 ### `mcpmock replay <transcript>`
 
 Replay a recorded transcript with timing simulation.
