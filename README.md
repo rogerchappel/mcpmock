@@ -250,6 +250,7 @@ MIT
 Run the release-readiness checks that match this package before publishing or opening a release PR.
 
 - `npm run lint` - run lint rules
+- `npm run audit` - fail on high-severity vulnerabilities in the dependency tree
 - `npm run check` - type-check the TypeScript sources
 - `npm test` - run the Vitest suite
 - `npm run smoke` - exercise the built CLI against fixtures
