@@ -2,6 +2,7 @@
 
 ### Highlights
 
+- Maintenance: Refresh the transitive `nanoid` lock resolution to clear the high-severity dependency audit finding.
 - Docs: Add reusable MCPMock agent skill packaging and package smoke coverage.
 - Maintenance: Add release notes for v0.1.0 release candidate.
 - Fixes: Resolve lint errors (unused imports, redundant eslint-disable)
@@ -11,6 +12,7 @@
 
 ### Changes
 
+- Maintenance: Refresh `nanoid` to an audited lockfile resolution. (pending)
 - Docs: Add reusable MCPMock agent skill packaging and package smoke coverage. (pending)
 - Features: Add 'generate' CLI command for mock catalog generation. (9d2c2ab)
 - Features: Add catalog generator with 8 sample tool templates. (0da8c8c)
