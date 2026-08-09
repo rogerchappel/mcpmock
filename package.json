@@ -25,8 +25,9 @@
     "docs:smoke": "npm run build && node scripts/docs-smoke.mjs",
     "audit": "npm audit --audit-level=high",
     "package-manager:check": "node scripts/check-package-manager.mjs",
+    "release-config:check": "node scripts/check-release-config.mjs",
     "validate": "bash scripts/validate.sh",
-    "release:check": "npm run package-manager:check && npm run audit && npm run check && npm test && npm run smoke && npm run docs:smoke && npm run package:smoke",
+    "release:check": "npm run package-manager:check && npm run release-config:check && npm run audit && npm run check && npm test && npm run smoke && npm run docs:smoke && npm run package:smoke",
     "package:smoke": "npm run build && node scripts/package-smoke.mjs",
     "prepack": "npm run build"
   },
