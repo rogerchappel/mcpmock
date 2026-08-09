@@ -268,6 +268,15 @@ npm pack --dry-run
 ```
 
 The repository uses npm and `package-lock.json` for deterministic installs. The
-release gate also checks that CI and release workflows retain that configuration.
+release gate also checks that CI and release workflows retain that configuration,
+that ReleaseBox enables npm publishing, and that the tag workflow publishes with
+npm provenance before creating the GitHub release.
+
+Releases use npm trusted publishing rather than a long-lived npm token. Before
+tagging, configure `rogerchappel/mcpmock` in npm as a trusted publisher for the
+`release.yml` workflow. Push a tag that exactly matches the package version (for
+example, package version `0.1.0` uses tag `v0.1.0`). The workflow validates the
+tag, runs the complete release gate, publishes `@rogerchappel/mcpmock`, and only
+then creates the GitHub release.
 
 The package smoke check prints the tarball contents so missing runtime files are caught before release.
