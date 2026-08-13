@@ -117,6 +117,8 @@ mcpmock tools fixtures/catalog.json               # text output (default)
 mcpmock tools fixtures/catalog.json --format json # JSON output
 ```
 
+`--format` accepts `text` or `json`. Other values are rejected with a nonzero exit status.
+
 ### `mcpmock call <catalog> <tool-name> <args-json>`
 
 Call a mock tool and get a deterministic response.
@@ -130,6 +132,8 @@ mcpmock call fixtures/catalog.json search '{"query": "test"}' --record --output 
 
 The transcript output must be a different file from the input catalog. Equivalent relative and
 absolute paths are rejected before recording so the catalog cannot be overwritten or appended to.
+The optional `<args-json>` value must be valid JSON; malformed input is reported as a concise CLI
+error without running the tool.
 
 ### `mcpmock replay <transcript>`
 
