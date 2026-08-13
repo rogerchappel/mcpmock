@@ -11,6 +11,26 @@ import type { CliOptions } from "./types.js";
 
 const program = new Command();
 const MAX_GENERATED_TOOLS = availableTools().length;
+type ToolListFormat = "json" | "text";
+
+class CliInputError extends Error {}
+
+function parseToolListFormat(value: string): ToolListFormat {
+  if (value !== "json" && value !== "text") {
+    throw new InvalidArgumentError("Output format must be one of: json, text");
+  }
+  return value;
+}
+
+function parseCallArguments(value: string | undefined): Record<string, unknown> {
+  if (!value) return {};
+
+  try {
+    return JSON.parse(value) as Record<string, unknown>;
+  } catch {
+    throw new CliInputError("Invalid call arguments JSON: expected valid JSON");
+  }
+}
 
 function parseToolCount(value: string): number {
   const count = Number(value);
@@ -51,8 +71,8 @@ program
 program
   .command("tools <catalog>")
   .description("List tools in a catalog")
-  .option("-f, --format <format>", "Output format (json|text)", "text")
-  .action((catalogPath: string, opts: { format?: string }) => {
+  .option("-f, --format <format>", "Output format (json|text)", parseToolListFormat, "text")
+  .action((catalogPath: string, opts: { format?: ToolListFormat }) => {
     const catalog = loadCatalog(catalogPath);
     const tools = listTools(catalog);
 
@@ -78,7 +98,7 @@ program
       }
 
       const catalog = loadCatalog(catalogPath);
-      const args: Record<string, unknown> = argsJson ? JSON.parse(argsJson) : {};
+      const args = parseCallArguments(argsJson);
 
       const result = runCall(catalog, toolName, args, opts.variant);
       console.log(JSON.stringify(result, null, 2));
@@ -152,4 +172,13 @@ program
     console.log(`Available tools: ${availableTools().join(", ")}`);
   });
 
-await program.parseAsync();
+try {
+  await program.parseAsync();
+} catch (error) {
+  if (error instanceof CliInputError) {
+    console.error(`error: ${error.message}`);
+    process.exitCode = 1;
+  } else {
+    throw error;
+  }
+}
