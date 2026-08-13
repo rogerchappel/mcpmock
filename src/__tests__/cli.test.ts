@@ -26,6 +26,48 @@ describe("CLI smoke", () => {
     expect(output).toContain("Catalog is valid");
   });
 
+  it.each([
+    ["text", "search — Search the knowledge base"],
+    ["json", '"name": "search"'],
+  ])("lists tools in %s format", (format, expected) => {
+    const result = spawnSync(
+      "npx",
+      ["tsx", "src/cli.ts", "tools", "fixtures/catalog.json", "--format", format],
+      { cwd: process.cwd(), encoding: "utf8" }
+    );
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain(expected);
+    expect(result.stderr).toBe("");
+  });
+
+  it("rejects an unsupported tools format without printing tool output", () => {
+    const result = spawnSync(
+      "npx",
+      ["tsx", "src/cli.ts", "tools", "fixtures/catalog.json", "--format", "yaml"],
+      { cwd: process.cwd(), encoding: "utf8" }
+    );
+
+    expect(result.status).not.toBe(0);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain("Output format must be one of: json, text");
+    expect(result.stderr).not.toContain("src/cli.ts");
+  });
+
+  it("reports malformed call arguments without a stack trace", () => {
+    const result = spawnSync(
+      "npx",
+      ["tsx", "src/cli.ts", "call", "fixtures/catalog.json", "search", "{bad"],
+      { cwd: process.cwd(), encoding: "utf8" }
+    );
+
+    expect(result.status).not.toBe(0);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain("Invalid call arguments JSON");
+    expect(result.stderr).not.toContain("SyntaxError");
+    expect(result.stderr).not.toContain("src/cli.ts");
+  });
+
   it("prints the package version from the CLI metadata", () => {
     const pkg = JSON.parse(readFileSync("package.json", "utf8")) as { version: string };
     const output = execFileSync("npx", ["tsx", "src/cli.ts", "--version"], {
