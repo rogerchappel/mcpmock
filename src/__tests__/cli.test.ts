@@ -26,6 +26,28 @@ describe("CLI smoke", () => {
     expect(output).toContain("Catalog is valid");
   });
 
+  it("rejects a catalog whose default response omits content", () => {
+    const directory = mkdtempSync(join(tmpdir(), "mcpmock-invalid-catalog-"));
+    const catalog = join(directory, "catalog.json");
+    writeFileSync(catalog, JSON.stringify({
+      tools: [{
+        name: "x",
+        description: "x",
+        inputSchema: { type: "object" },
+        responses: { default: {} },
+      }],
+    }));
+
+    const result = spawnSync("npx", ["tsx", "src/cli.ts", "validate", catalog], {
+      cwd: process.cwd(),
+      encoding: "utf8",
+    });
+
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("$.tools[0].responses.default.content");
+    expect(result.stderr).toContain("must be a non-empty array");
+  });
+
   it.each([
     ["text", "search — Search the knowledge base"],
     ["json", '"name": "search"'],
