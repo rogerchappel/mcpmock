@@ -67,11 +67,9 @@ export function validateCatalog(catalog: Record<string, unknown>): ValidationRes
       continue;
     }
 
-    if ("content" in defaultResp) {
-      const content = defaultResp.content;
-      if (!Array.isArray(content) || content.length === 0) {
-        errors.push({ path: `${base}.responses.default.content`, message: "Default response content must be a non-empty array" });
-      }
+    const content = defaultResp.content;
+    if (!Array.isArray(content) || content.length === 0) {
+      errors.push({ path: `${base}.responses.default.content`, message: "Default response content must be a non-empty array" });
     }
   }
 

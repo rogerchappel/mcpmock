@@ -150,15 +150,25 @@ describe("validateCatalog", () => {
     expect(result.toolCount).toBe(2);
   });
 
-  it("detects empty content array in default response", () => {
+  it.each([
+    ["missing", {}],
+    ["non-array", { content: "text" }],
+    ["empty", { content: [] }],
+  ])("rejects %s default response content", (_shape, defaultResponse) => {
     const catalog = {
       tools: [
-        { name: "x", description: "d", inputSchema: { type: "object" }, responses: { default: { content: [] } } },
+        { name: "x", description: "d", inputSchema: { type: "object" }, responses: { default: defaultResponse } },
       ],
     };
-    const result = validateCatalog(catalog);
-    expect(result.valid).toBe(false);
-    expect(result.errors?.some((e) => e.path.includes("content"))).toBe(true);
+
+    for (const validate of [validateCatalog, validateCatalogStrict]) {
+      const result = validate(catalog);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContainEqual({
+        path: "$.tools[0].responses.default.content",
+        message: "Default response content must be a non-empty array",
+      });
+    }
   });
 });
 
