@@ -43,7 +43,7 @@ function parseToolCount(value: string): number {
 program
   .name("mcpmock")
   .description("Fixture-backed mock MCP tool catalogs for deterministic agent testing")
-  .version("0.1.0");
+  .version("0.2.0");
 
 // ── validate ────────────────────────────────────────────
 program
