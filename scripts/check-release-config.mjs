@@ -27,6 +27,9 @@ if (!/npm publish[^\n]*--provenance[^\n]*--access public/.test(workflow)) {
 if (!/GITHUB_REF_NAME/.test(workflow) || !/package_version/.test(workflow)) {
   failures.push("release workflow must verify the tag against the package version");
 }
+if (!packageJson.scripts?.["release:check"]?.includes("registry-version:check")) {
+  failures.push("release check must verify the package version against the npm registry");
+}
 
 const publishAt = workflow.indexOf("npm publish");
 const githubReleaseAt = workflow.indexOf("gh release create");
