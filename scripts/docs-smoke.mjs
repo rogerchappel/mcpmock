@@ -34,6 +34,10 @@ try {
     }
   }
 
+  if (!readme.includes("| `responses.default.content` | array | ✅ | One or more content items returned by default |")) {
+    throw new Error("Catalog format docs must describe non-empty default response content.");
+  }
+
   const combinedDocs = `${readme}\n${prd}`;
   const unsupportedReferences = [
     /fixtures\/catalog\.ya?ml\b/,

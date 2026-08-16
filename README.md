@@ -169,6 +169,7 @@ A catalog is a JSON file with a `tools` array. Each tool has:
 | `inputSchema` | object | ✅ | JSON Schema for input validation |
 | `responses` | object | ✅ | Response templates |
 | `responses.default` | object | ✅ | Default response with `content` array |
+| `responses.default.content` | array | ✅ | One or more content items returned by default |
 | `responses.variants` | object | ❌ | Named variant responses |
 
 ### Template Substitution
