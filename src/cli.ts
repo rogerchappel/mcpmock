@@ -25,11 +25,17 @@ function parseToolListFormat(value: string): ToolListFormat {
 function parseCallArguments(value: string | undefined): Record<string, unknown> {
   if (!value) return {};
 
+  let parsed: unknown;
   try {
-    return JSON.parse(value) as Record<string, unknown>;
+    parsed = JSON.parse(value);
   } catch {
     throw new CliInputError("Invalid call arguments JSON: expected valid JSON");
   }
+
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new CliInputError("Invalid call arguments JSON: expected a JSON object");
+  }
+  return parsed as Record<string, unknown>;
 }
 
 function parseToolCount(value: string): number {
