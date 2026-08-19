@@ -153,8 +153,9 @@ mcpmock call fixtures/catalog.json search '{"query": "test"}' --record --output 
 
 The transcript output must be a different file from the input catalog. Equivalent relative and
 absolute paths are rejected before recording so the catalog cannot be overwritten or appended to.
-The optional `<args-json>` value must be valid JSON; malformed input is reported as a concise CLI
-error without running the tool.
+The optional `<args-json>` value must be a JSON object. Malformed JSON and other JSON values such
+as arrays, strings, numbers, booleans, or `null` are reported as concise CLI errors without running
+the tool.
 
 ### `mcpmock replay <transcript>`
 
