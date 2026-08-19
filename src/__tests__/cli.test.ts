@@ -90,6 +90,39 @@ describe("CLI smoke", () => {
     expect(result.stderr).not.toContain("src/cli.ts");
   });
 
+  it.each(["null", "[]", '"text"', "1", "true", "false"])(
+    "rejects non-object call arguments %s without a stack trace",
+    (argsJson) => {
+      const result = spawnSync(
+        "npx",
+        ["tsx", "src/cli.ts", "call", "fixtures/catalog.json", "search", argsJson],
+        { cwd: process.cwd(), encoding: "utf8" }
+      );
+
+      expect(result.status).not.toBe(0);
+      expect(result.stdout).toBe("");
+      expect(result.stderr).toContain("Invalid call arguments JSON: expected a JSON object");
+      expect(result.stderr).not.toContain("TypeError");
+      expect(result.stderr).not.toContain("src/cli.ts");
+    }
+  );
+
+  it("accepts object call arguments and substitutes response templates", () => {
+    const result = spawnSync(
+      "npx",
+      [
+        "tsx", "src/cli.ts", "call", "fixtures/catalog.json", "search",
+        '{"query":"typescript patterns"}',
+      ],
+      { cwd: process.cwd(), encoding: "utf8" }
+    );
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain("typescript patterns");
+    expect(result.stdout).not.toContain("{query}");
+    expect(result.stderr).toBe("");
+  });
+
   it("prints the package version from the CLI metadata", () => {
     const pkg = JSON.parse(readFileSync("package.json", "utf8")) as { version: string };
     const output = execFileSync("npx", ["tsx", "src/cli.ts", "--version"], {
