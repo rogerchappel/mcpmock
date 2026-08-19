@@ -17,6 +17,27 @@ MCPMock gives you a local fixture-backed mock server where **the same inputs alw
 
 ## Installation
 
+MCPMock is not yet published to the npm registry. Until the first release is
+published, run it from a checkout:
+
+```bash
+git clone https://github.com/rogerchappel/mcpmock.git
+cd mcpmock
+npm ci
+npm run build
+node dist/cli.js --help
+```
+
+You can also build the same tarball that will be published and invoke its CLI
+without installing it globally:
+
+```bash
+npm pack
+npx --yes --package ./rogerchappel-mcpmock-0.2.0.tgz mcpmock --help
+```
+
+After the package is published to npm, these registry commands will work:
+
 ```bash
 npm install -g @rogerchappel/mcpmock
 # or
