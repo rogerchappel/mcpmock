@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -17,6 +17,48 @@ function run(args) {
   });
 }
 
+function verifyPrepublicationCheckout(readme) {
+  const documentedCommands = [
+    "git clone https://github.com/rogerchappel/mcpmock.git",
+    "cd mcpmock",
+    "npm ci",
+    "npm run build",
+    "node dist/cli.js --help",
+  ];
+  for (const command of documentedCommands) {
+    if (!readme.includes(command)) {
+      throw new Error(`Pre-publication checkout docs are missing command: ${command}`);
+    }
+  }
+  if (!readme.includes("not yet published to the npm registry")) {
+    throw new Error("Installation docs must state that the package is not yet published.");
+  }
+  if (!readme.includes("After the package is published to npm")) {
+    throw new Error("Registry commands must be labelled as post-publication instructions.");
+  }
+
+  const checkout = join(smokeRoot, "clean-checkout");
+  mkdirSync(checkout);
+  const tracked = execFileSync("git", ["ls-files", "-z"], { encoding: "buffer" })
+    .toString("utf8")
+    .split("\0")
+    .filter(Boolean);
+  for (const path of tracked) {
+    const destination = join(checkout, path);
+    mkdirSync(join(destination, ".."), { recursive: true });
+    cpSync(path, destination);
+  }
+  execFileSync("npm", ["ci"], { cwd: checkout, stdio: "pipe" });
+  execFileSync("npm", ["run", "build"], { cwd: checkout, stdio: "pipe" });
+  const help = execFileSync(process.execPath, [join(checkout, "dist", "cli.js"), "--help"], {
+    cwd: checkout,
+    encoding: "utf8",
+  });
+  if (!help.includes("Usage: mcpmock [options] [command]")) {
+    throw new Error("Documented pre-publication checkout command returned unexpected help output.");
+  }
+}
+
 try {
   const readme = readFileSync("README.md", "utf8");
   const prd = readFileSync("docs/PRD.md", "utf8");
@@ -27,6 +69,8 @@ try {
     `mcpmock replay ${fixtureTranscript} --fast`,
     "mcpmock generate my-tools.json --count 3",
   ];
+
+  verifyPrepublicationCheckout(readme);
 
   for (const example of requiredExamples) {
     if (!readme.includes(example) && !prd.includes(example)) {
