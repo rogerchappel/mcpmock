@@ -5,6 +5,20 @@ import { join } from "node:path";
 import { describe, it, expect } from "vitest";
 
 describe("CLI smoke", () => {
+  const runCli = (args: string[]) =>
+    spawnSync("npx", ["tsx", "src/cli.ts", ...args], {
+      cwd: process.cwd(), encoding: "utf8",
+    });
+
+  const expectConciseFailure = (args: string[]) => {
+    const result = runCli(args);
+    expect(result.status).not.toBe(0);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toMatch(/^error: .+\n$/);
+    expect(result.stderr).not.toMatch(/\n\s+at |node:internal|node:fs:\d+/);
+    return result.stderr;
+  };
+
   it("shows help text from the TypeScript entrypoint", () => {
     const output = execFileSync("npx", ["tsx", "src/cli.ts", "--help"], {
       cwd: process.cwd(),
@@ -131,6 +145,34 @@ describe("CLI smoke", () => {
     });
 
     expect(output.trim()).toBe(pkg.version);
+  });
+
+  it.each(["validate", "tools", "call"])("%s reports a missing catalog concisely", (command) => {
+    const missing = join(mkdtempSync(join(tmpdir(), "mcpmock-cli-")), "missing.json");
+    const args = command === "call" ? [command, missing, "search"] : [command, missing];
+    expect(expectConciseFailure(args)).toContain(`File not found: ${missing}`);
+  });
+
+  it("reports malformed catalog JSON consistently", () => {
+    const catalog = join(mkdtempSync(join(tmpdir(), "mcpmock-cli-")), "catalog.json");
+    writeFileSync(catalog, "{ not json\n");
+    expect(expectConciseFailure(["validate", catalog])).toContain("Invalid JSON input");
+    expect(expectConciseFailure(["tools", catalog])).toContain("Invalid JSON input");
+  });
+
+  it("does not create a transcript when call input fails", () => {
+    const output = join(mkdtempSync(join(tmpdir(), "mcpmock-cli-")), "transcript.jsonl");
+    expectConciseFailure(["call", "fixtures/catalog.json", "search", "{", "--record", "--output", output]);
+    expect(() => readFileSync(output, "utf8")).toThrow();
+  });
+
+  it("reports missing and malformed replay transcripts concisely", () => {
+    const directory = mkdtempSync(join(tmpdir(), "mcpmock-cli-"));
+    const missing = join(directory, "missing.jsonl");
+    const malformed = join(directory, "malformed.jsonl");
+    writeFileSync(malformed, "{ not json\n");
+    expect(expectConciseFailure(["replay", missing])).toContain(`File not found: ${missing}`);
+    expect(expectConciseFailure(["replay", malformed])).toContain("Invalid JSON input");
   });
 
   it.each(["0", "-1", "NaN", "Infinity"])(
