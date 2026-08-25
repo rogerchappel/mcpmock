@@ -171,6 +171,19 @@ Each entry is printed, then replay waits for that entry's recorded `latencyMs`
 before printing the next entry. `--speed` divides those delays by a positive
 finite multiplier; `--fast` skips them entirely.
 
+### Input errors
+
+Expected input failures exit nonzero with one concise diagnostic on stderr and
+no Node.js stack trace. This includes missing or malformed catalog JSON,
+malformed call argument JSON, and missing or malformed transcript JSONL:
+
+```text
+$ mcpmock validate missing.json
+error: File not found: /path/to/missing.json
+```
+
+A failed call does not create or append a transcript, even with `--record`.
+
 ### `mcpmock generate [output]`
 
 Generate a deterministic catalog containing 1 to 8 sample tools (5 by default).
