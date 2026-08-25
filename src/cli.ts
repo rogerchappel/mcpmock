@@ -184,6 +184,20 @@ try {
   if (error instanceof CliInputError) {
     console.error(`error: ${error.message}`);
     process.exitCode = 1;
+  } else if (error instanceof SyntaxError) {
+    console.error("error: Invalid JSON input: expected valid JSON");
+    process.exitCode = 1;
+  } else if (error instanceof Error) {
+    const code = "code" in error ? String(error.code) : "";
+    const path = "path" in error ? String(error.path) : "";
+    if (code === "ENOENT") {
+      console.error(`error: File not found: ${path || error.message}`);
+    } else if (["EACCES", "EPERM", "EISDIR"].includes(code)) {
+      console.error(`error: Cannot access file: ${path || error.message}`);
+    } else {
+      console.error(`error: ${error.message}`);
+    }
+    process.exitCode = 1;
   } else {
     throw error;
   }
