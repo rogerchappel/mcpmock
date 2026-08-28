@@ -62,6 +62,20 @@ describe("CLI smoke", () => {
     expect(result.stderr).toContain("must be a non-empty array");
   });
 
+  it("rejects malformed response content instead of blessing callable output", () => {
+    const directory = mkdtempSync(join(tmpdir(), "mcpmock-invalid-block-"));
+    const catalog = join(directory, "catalog.json");
+    writeFileSync(catalog, JSON.stringify({ tools: [{
+      name: "x", description: "x", inputSchema: { type: "object" },
+      responses: { default: { content: [{}] } },
+    }] }));
+
+    const result = runCli(["validate", catalog]);
+    expect(result.status).not.toBe(0);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain("$.tools[0].responses.default.content[0].type");
+  });
+
   it.each([
     ["text", "search — Search the knowledge base"],
     ["json", '"name": "search"'],
