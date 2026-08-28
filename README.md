@@ -124,6 +124,8 @@ mcpmock replay transcript.jsonl
 
 Validate a mock catalog against the schema.
 
+Validation checks every default and variant response. Content blocks must be `text` with string `text`, `image` with string `data` and `mimeType`, or `resource` with a string `uri`; optional response `isError` values must be boolean.
+
 ```bash
 mcpmock validate fixtures/catalog.json          # basic catalog validation
 mcpmock validate fixtures/catalog.json --strict # strict input-schema validation
