@@ -6,6 +6,41 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+function validateResponse(response: unknown, base: string, errors: ValidationError[]): void {
+  if (!isRecord(response)) {
+    errors.push({ path: base, message: "Response must be an object" });
+    return;
+  }
+  if (response.isError !== undefined && typeof response.isError !== "boolean") {
+    errors.push({ path: `${base}.isError`, message: "Response isError must be a boolean" });
+  }
+  if (!Array.isArray(response.content) || response.content.length === 0) {
+    errors.push({ path: `${base}.content`, message: "Response content must be a non-empty array" });
+    return;
+  }
+  response.content.forEach((block, index) => {
+    const path = `${base}.content[${index}]`;
+    if (!isRecord(block)) {
+      errors.push({ path, message: "Content block must be an object" });
+      return;
+    }
+    if (!(["text", "image", "resource"] as unknown[]).includes(block.type)) {
+      errors.push({ path: `${path}.type`, message: "Content block type must be text, image, or resource" });
+      return;
+    }
+    if (block.type === "text" && typeof block.text !== "string") {
+      errors.push({ path: `${path}.text`, message: "Text content block must have string text" });
+    }
+    if (block.type === "image") {
+      if (typeof block.data !== "string") errors.push({ path: `${path}.data`, message: "Image content block must have string data" });
+      if (typeof block.mimeType !== "string") errors.push({ path: `${path}.mimeType`, message: "Image content block must have string mimeType" });
+    }
+    if (block.type === "resource" && typeof block.uri !== "string") {
+      errors.push({ path: `${path}.uri`, message: "Resource content block must have string uri" });
+    }
+  });
+}
+
 /**
  * Load and parse a mock catalog from a JSON file.
  */
@@ -67,9 +102,16 @@ export function validateCatalog(catalog: Record<string, unknown>): ValidationRes
       continue;
     }
 
-    const content = defaultResp.content;
-    if (!Array.isArray(content) || content.length === 0) {
-      errors.push({ path: `${base}.responses.default.content`, message: "Default response content must be a non-empty array" });
+    validateResponse(defaultResp, `${base}.responses.default`, errors);
+
+    if (responses.variants !== undefined) {
+      if (!isRecord(responses.variants)) {
+        errors.push({ path: `${base}.responses.variants`, message: "Response variants must be an object" });
+      } else {
+        for (const [name, response] of Object.entries(responses.variants)) {
+          validateResponse(response, `${base}.responses.variants.${name}`, errors);
+        }
+      }
     }
   }
 
