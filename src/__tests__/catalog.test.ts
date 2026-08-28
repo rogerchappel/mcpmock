@@ -82,7 +82,7 @@ describe("validateCatalog", () => {
           name: "x",
           description: "d",
           inputSchema: { type: "object" },
-          responses: { variants: { alt: { content: [{ type: "text" }] } } },
+          responses: { variants: { alt: { content: [{ type: "text", text: "ok" }] } } },
         },
       ],
     };
@@ -129,8 +129,8 @@ describe("validateCatalog", () => {
   it("rejects duplicate tool names", () => {
     const catalog = {
       tools: [
-        { name: "dup", description: "d", inputSchema: { type: "object" }, responses: { default: { content: [{ type: "text" }] } } },
-        { name: "dup", description: "d", inputSchema: { type: "object" }, responses: { default: { content: [{ type: "text" }] } } },
+        { name: "dup", description: "d", inputSchema: { type: "object" }, responses: { default: { content: [{ type: "text", text: "ok" }] } } },
+        { name: "dup", description: "d", inputSchema: { type: "object" }, responses: { default: { content: [{ type: "text", text: "ok" }] } } },
       ],
     };
     const result = validateCatalog(catalog);
@@ -141,8 +141,8 @@ describe("validateCatalog", () => {
   it("validates multiple tools correctly", () => {
     const catalog = {
       tools: [
-        { name: "a", description: "d", inputSchema: { type: "object" }, responses: { default: { content: [{ type: "text" }] } } },
-        { name: "b", description: "d", inputSchema: { type: "object" }, responses: { default: { content: [{ type: "text" }] } } },
+        { name: "a", description: "d", inputSchema: { type: "object" }, responses: { default: { content: [{ type: "text", text: "ok" }] } } },
+        { name: "b", description: "d", inputSchema: { type: "object" }, responses: { default: { content: [{ type: "text", text: "ok" }] } } },
       ],
     };
     const result = validateCatalog(catalog);
@@ -166,9 +166,46 @@ describe("validateCatalog", () => {
       expect(result.valid).toBe(false);
       expect(result.errors).toContainEqual({
         path: "$.tools[0].responses.default.content",
-        message: "Default response content must be a non-empty array",
+        message: "Response content must be a non-empty array",
       });
     }
+  });
+
+  it.each([
+    ["missing type", {}, ".type"],
+    ["unsupported type", { type: "audio" }, ".type"],
+    ["text without text", { type: "text" }, ".text"],
+    ["image without data", { type: "image", mimeType: "image/png" }, ".data"],
+    ["image without mime type", { type: "image", data: "abc" }, ".mimeType"],
+    ["resource without URI", { type: "resource" }, ".uri"],
+  ])("rejects %s with an indexed content path", (_label, block, suffix) => {
+    const catalog = { tools: [{ name: "x", description: "d", inputSchema: { type: "object" }, responses: { default: { content: [block] } } }] };
+    const result = validateCatalog(catalog);
+    expect(result.valid).toBe(false);
+    expect(result.errors?.some((error) => error.path === `$.tools[0].responses.default.content[0]${suffix}`)).toBe(true);
+  });
+
+  it("accepts every supported content block and boolean isError", () => {
+    const catalog = { tools: [{ name: "x", description: "d", inputSchema: { type: "object" }, responses: { default: { isError: false, content: [
+      { type: "text", text: "ok" },
+      { type: "image", data: "abc", mimeType: "image/png" },
+      { type: "resource", uri: "file:///fixture.txt" },
+    ] } } }] };
+    expect(validateCatalog(catalog).valid).toBe(true);
+  });
+
+  it("validates variant responses and optional isError", () => {
+    const catalog = { tools: [{ name: "x", description: "d", inputSchema: { type: "object" }, responses: {
+      default: { content: [{ type: "text", text: "ok" }] },
+      variants: { broken: { isError: "yes", content: [{ type: "image" }] } },
+    } }] };
+    const result = validateCatalog(catalog);
+    expect(result.valid).toBe(false);
+    expect(result.errors?.map((error) => error.path)).toEqual(expect.arrayContaining([
+      "$.tools[0].responses.variants.broken.isError",
+      "$.tools[0].responses.variants.broken.content[0].data",
+      "$.tools[0].responses.variants.broken.content[0].mimeType",
+    ]));
   });
 });
 
@@ -180,7 +217,7 @@ describe("validateCatalogStrict", () => {
           name: "x",
           description: "d",
           inputSchema: { type: "array" },
-          responses: { default: { content: [{ type: "text" }] } },
+          responses: { default: { content: [{ type: "text", text: "ok" }] } },
         },
       ],
     };
