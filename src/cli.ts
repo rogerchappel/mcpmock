@@ -2,7 +2,7 @@
 import { Command, InvalidArgumentError } from "commander";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { loadCatalog, validateCatalog, validateCatalogStrict } from "./catalog.js";
+import { loadCatalog, loadValidatedCatalog, validateCatalog, validateCatalogStrict } from "./catalog.js";
 import { runCall, listTools, formatToolList } from "./runner.js";
 import { newTranscript, recordEntry, replayTranscript } from "./transcript.js";
 import { parseReplaySpeed, replayEntries } from "./replay.js";
@@ -79,7 +79,7 @@ program
   .description("List tools in a catalog")
   .option("-f, --format <format>", "Output format (json|text)", parseToolListFormat, "text")
   .action((catalogPath: string, opts: { format?: ToolListFormat }) => {
-    const catalog = loadCatalog(catalogPath);
+    const catalog = loadValidatedCatalog(catalogPath);
     const tools = listTools(catalog);
 
     if (opts.format === "json") {
@@ -103,7 +103,7 @@ program
         throw new Error("Transcript output path must differ from the catalog path");
       }
 
-      const catalog = loadCatalog(catalogPath);
+      const catalog = loadValidatedCatalog(catalogPath);
       const args = parseCallArguments(argsJson);
 
       const result = runCall(catalog, toolName, args, opts.variant);
