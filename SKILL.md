@@ -30,6 +30,8 @@ Use this skill when an agent integration needs deterministic MCP-like tool fixtu
 5. Record calls with `--record --output <transcript.jsonl>` only when a persistent fixture is intended.
 6. Replay the transcript with `mcpmock replay <transcript.jsonl> --fast`.
 
+The consuming commands validate inputs before producing output: `tools` and `call` report catalog field paths, while `replay` reports the physical JSONL line and malformed field and exits non-zero before playback.
+
 ## Examples
 
 ```bash
@@ -57,4 +59,3 @@ For release review, also run:
 ```bash
 npm run package:smoke
 ```
-
