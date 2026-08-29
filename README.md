@@ -175,6 +175,8 @@ finite multiplier; `--fast` skips them entirely.
 
 ### Input errors
 
+`tools` and `call` validate the complete catalog before using it. Invalid catalogs exit non-zero with stable field paths such as `$.tools[0].responses.default`. `replay` validates every nonblank JSONL entry before playback and reports its physical line and malformed field, so invalid transcripts never replay partially.
+
 Expected input failures exit nonzero with one concise diagnostic on stderr and
 no Node.js stack trace. This includes missing or malformed catalog JSON,
 malformed call argument JSON, and missing or malformed transcript JSONL:
