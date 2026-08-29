@@ -91,6 +91,15 @@ describe("CLI smoke", () => {
     expect(result.stderr).toBe("");
   });
 
+  it.each(["tools", "call"])("%s rejects malformed catalogs with field diagnostics", (command) => {
+    const catalog = join(mkdtempSync(join(tmpdir(), "mcpmock-invalid-catalog-")), "catalog.json");
+    writeFileSync(catalog, JSON.stringify({ tools: {} }));
+    const args = command === "call" ? [command, catalog, "search"] : [command, catalog];
+    const error = expectConciseFailure(args);
+    expect(error).toContain("Invalid catalog: $.tools: Catalog must have a 'tools' array");
+    expect(error).not.toContain("TypeError");
+  });
+
   it("rejects an unsupported tools format without printing tool output", () => {
     const result = spawnSync(
       "npx",
@@ -186,7 +195,15 @@ describe("CLI smoke", () => {
     const malformed = join(directory, "malformed.jsonl");
     writeFileSync(malformed, "{ not json\n");
     expect(expectConciseFailure(["replay", missing])).toContain(`File not found: ${missing}`);
-    expect(expectConciseFailure(["replay", malformed])).toContain("Invalid JSON input");
+    expect(expectConciseFailure(["replay", malformed])).toContain("Invalid transcript at line 1: expected valid JSON");
+  });
+
+  it("rejects malformed replay entries with line and field diagnostics", () => {
+    const transcript = join(mkdtempSync(join(tmpdir(), "mcpmock-cli-")), "malformed.jsonl");
+    writeFileSync(transcript, `\n${JSON.stringify({ tool: 42 })}\n`);
+    const error = expectConciseFailure(["replay", transcript, "--fast"]);
+    expect(error).toContain("line 2, field timestamp");
+    expect(error).not.toContain("Replay complete");
   });
 
   it.each(["0", "-1", "NaN", "Infinity"])(

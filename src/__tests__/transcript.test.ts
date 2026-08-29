@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { newTranscript, recordEntry } from "../transcript.js";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { newTranscript, recordEntry, replayTranscript } from "../transcript.js";
 
 describe("newTranscript", () => {
   it("creates an entry with current timestamp", () => {
@@ -44,5 +47,29 @@ describe("recordEntry", () => {
     const entry = newTranscript("x", {}, { content: [] });
     const line = recordEntry(entry);
     expect(line.split("\n")).toHaveLength(1);
+  });
+});
+
+describe("replayTranscript", () => {
+  const writeTranscript = (contents: string) => {
+    const path = join(mkdtempSync(join(tmpdir(), "mcpmock-transcript-")), "input.jsonl");
+    writeFileSync(path, contents);
+    return path;
+  };
+
+  it("accepts valid entries and ignores blank lines", () => {
+    const entry = recordEntry(newTranscript("search", {}, { content: [] }, undefined, 5));
+    expect(replayTranscript(writeTranscript(`\n${entry}\n\n`))).toHaveLength(1);
+  });
+
+  it.each([
+    ["timestamp", { timestamp: "now", tool: "x", args: {}, result: { content: [] }, latencyMs: 0 }],
+    ["tool", { timestamp: 1, tool: 42, args: {}, result: { content: [] }, latencyMs: 0 }],
+    ["args", { timestamp: 1, tool: "x", args: [], result: { content: [] }, latencyMs: 0 }],
+    ["result.content", { timestamp: 1, tool: "x", args: {}, result: {}, latencyMs: 0 }],
+    ["latencyMs", { timestamp: 1, tool: "x", args: {}, result: { content: [] }, latencyMs: -1 }],
+  ])("rejects malformed %s with its physical line", (field, entry) => {
+    const path = writeTranscript(`\n${JSON.stringify(entry)}\n`);
+    expect(() => replayTranscript(path)).toThrow(`line 2, field ${field}`);
   });
 });
