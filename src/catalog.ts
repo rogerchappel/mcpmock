@@ -51,6 +51,17 @@ export function loadCatalog(catalogPath: string): MockCatalog {
   return catalog;
 }
 
+/** Load a catalog and reject invalid runtime shapes before it is consumed. */
+export function loadValidatedCatalog(catalogPath: string): MockCatalog {
+  const catalog = loadCatalog(catalogPath);
+  const result = validateCatalog(catalog as unknown as Record<string, unknown>);
+  if (!result.valid) {
+    const detail = result.errors?.map((error) => `${error.path}: ${error.message}`).join("; ");
+    throw new Error(`Invalid catalog: ${detail ?? "catalog validation failed"}`);
+  }
+  return catalog;
+}
+
 /**
  * Validate a mock catalog structure.
  */
