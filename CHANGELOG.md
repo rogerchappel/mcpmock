@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Keep the Quick Start catalog copy/pasteable as strict JSON and execute it in the documentation smoke test
+
 ## [0.2.0] - 2026-08-15
 
 ### Added
