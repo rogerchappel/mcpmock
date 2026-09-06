@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -9,6 +9,7 @@ const fixtureTranscript = "fixtures/transcript.jsonl";
 const smokeRoot = mkdtempSync(join(tmpdir(), "mcpmock-docs-smoke-"));
 const recordedTranscript = join(smokeRoot, "transcript.jsonl");
 const generatedCatalog = join(smokeRoot, "generated-catalog.json");
+const quickStartCatalog = join(smokeRoot, "my-tools.json");
 
 function run(args) {
   return execFileSync(process.execPath, [cli, ...args], {
@@ -59,6 +60,20 @@ function verifyPrepublicationCheckout(readme) {
   }
 }
 
+function extractQuickStartCatalog(readme) {
+  const quickStart = readme.match(
+    /### 1\. Create a catalog[\s\S]*?```json\s*\n([\s\S]*?)\n```/,
+  );
+  if (!quickStart?.[1]) {
+    throw new Error("Quick Start must include a JSON catalog code block.");
+  }
+  try {
+    return JSON.parse(quickStart[1]);
+  } catch (error) {
+    throw new Error(`Quick Start catalog must be strict JSON: ${error.message}`);
+  }
+}
+
 try {
   const readme = readFileSync("README.md", "utf8");
   const prd = readFileSync("docs/PRD.md", "utf8");
@@ -71,6 +86,23 @@ try {
   ];
 
   verifyPrepublicationCheckout(readme);
+
+  const documentedCatalog = extractQuickStartCatalog(readme);
+  writeFileSync(quickStartCatalog, `${JSON.stringify(documentedCatalog, null, 2)}\n`);
+  const quickStartValidation = run(["validate", quickStartCatalog]);
+  if (!quickStartValidation.includes("Catalog is valid: 1 tool(s) defined")) {
+    throw new Error("Quick Start validation example returned unexpected output.");
+  }
+  const quickStartTools = JSON.parse(run(["tools", quickStartCatalog, "--format", "json"]));
+  if (quickStartTools.length !== 1 || quickStartTools[0]?.name !== "search") {
+    throw new Error("Quick Start tools example returned unexpected output.");
+  }
+  const quickStartCall = JSON.parse(
+    run(["call", quickStartCatalog, "search", '{"query":"typescript patterns"}']),
+  );
+  if (quickStartCall.content?.[0]?.text !== "Found 3 results for typescript patterns 📚") {
+    throw new Error("Quick Start call example returned unexpected output.");
+  }
 
   for (const example of requiredExamples) {
     if (!readme.includes(example) && !prd.includes(example)) {

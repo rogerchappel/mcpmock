@@ -48,8 +48,9 @@ npx --package @rogerchappel/mcpmock mcpmock --help
 
 ### 1. Create a catalog
 
+Save this as `my-tools.json`:
+
 ```json
-// my-tools.json
 {
   "tools": [
     {
