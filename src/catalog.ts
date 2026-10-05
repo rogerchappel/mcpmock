@@ -74,6 +74,9 @@ export function validateCatalog(catalog: Record<string, unknown>): ValidationRes
   }
 
   const tools = catalog.tools;
+  if (tools.length === 0) {
+    errors.push({ path: "$.tools", message: "Catalog must have at least one tool" });
+  }
 
   for (let i = 0; i < tools.length; i++) {
     const tool = tools[i];

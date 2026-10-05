@@ -22,6 +22,17 @@ describe("validateCatalog", () => {
     expect(result.errors).toEqual([]);
   });
 
+  it("rejects a catalog with an empty tools array", () => {
+    const result = validateCatalog({ tools: [] });
+
+    expect(result.valid).toBe(false);
+    expect(result.toolCount).toBe(0);
+    expect(result.errors).toContainEqual({
+      path: "$.tools",
+      message: "Catalog must have at least one tool",
+    });
+  });
+
   it("rejects a catalog without tools array", () => {
     const result = validateCatalog({});
     expect(result.valid).toBe(false);
